@@ -2,6 +2,7 @@ import express from "express";
 import {config} from "dotenv";
 import authRouter from "./routes/auth.router";
 import { errorHandler } from "./middleware/errorHandler";
+import groupRouter from "./routes/group.router";
 // import cookieParser from "cookie-parser";
 // import cors from "cors";
 
@@ -16,6 +17,10 @@ const PORT = process.env.PORT || 4000
 
 // routes
 app.use("/auth", authRouter);
+
+// add the token verification and extraction user_id, session_id?.
+app.use("/group", groupRouter);
+
 app.use(errorHandler);
 
 app.listen(PORT, () =>{
