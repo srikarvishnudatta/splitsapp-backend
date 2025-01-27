@@ -6,7 +6,7 @@ export const statusEnum = pgEnum("status_type", [
     "accepted",
     "rejected",
     "expired"
-])
+]);
 
 export const groupTable = pgTable("groups", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
