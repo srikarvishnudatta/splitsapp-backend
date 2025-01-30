@@ -14,7 +14,7 @@ export const loginUser = async (user: SelectUserType, userAgent?:string) => {
     const userFound = await db.select().from(usersTable).where(eq(usersTable.email, user.email));
     appAssert(userFound, NOT_FOUND, "User not found!");
    //  appAssert(userFound[0].is_verified, BAD_REQUEST, "User not verified");
-    appAssert(compareValues(user.password, userFound[0].password), BAD_REQUEST, "Bad credentials!");
+    appAssert(!compareValues(user.password, userFound[0].password), BAD_REQUEST, "Invalid password!");
     // create a new session, then issue a new jwt token.
     const {id: session_id} = (await setSession(userFound[0].id, userAgent))[0];
     const accesstoken = issueToken({

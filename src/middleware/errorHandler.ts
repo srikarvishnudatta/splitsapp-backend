@@ -7,8 +7,9 @@ export const errorHandler: ErrorRequestHandler = (err, req: Request, res: Respon
     console.log(err);
     if(err instanceof AppError){
         appErrorHandler(res, err);
+    }else{
+        res.status(INTERNAL_SERVER_ERROR).send({message: "Internal server error"});
     }
-    res.status(INTERNAL_SERVER_ERROR).send({message: "Internal server error"});
 }
 const appErrorHandler = (res: Response, err: AppError) =>{
     return res.status(err.statusCode).json({

@@ -1,4 +1,4 @@
-import { SignOptions } from "jsonwebtoken";
+import { SignOptions, VerifyOptions } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
 export type AccessTokenPayload = {
@@ -26,6 +26,21 @@ export const issueToken = (
         ...signInOptions
     });
 }
-export const verifyToken = () =>{
-    
+export const verifyToken = <TPayload extends object = AccessTokenPayload>(
+    token: string, 
+    options?: VerifyOptions & {
+        secret?:string;
+    }
+) =>{
+    const {secret = process.env.ACCESS_TOKEN_SECRET!, ...verifyOpts} = options || {}
+    try {
+        const payload = jwt.verify(token, secret,{
+            ...verifyOpts
+        }) as TPayload
+        return {payload};
+    } catch (error:any) {
+        return {
+            error: error.message
+        }
+    }
 }
