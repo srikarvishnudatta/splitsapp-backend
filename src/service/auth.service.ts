@@ -8,13 +8,13 @@ import { newUserSchema } from "../lib/zod.schemas";
 import { setSession } from "./session.service";
 import { issueToken } from "../lib/jwt";
 import { getOneDayFromNow } from "../lib/date";
-import { sendEmail } from "./email.service";
+import { sendEmail, sendMail } from "./email.service";
 
 export const loginUser = async (user: SelectUserType, userAgent?:string) => {
     const userFound = await db.select().from(usersTable).where(eq(usersTable.email, user.email));
     appAssert(userFound, NOT_FOUND, "User not found!");
    //  appAssert(userFound[0].is_verified, BAD_REQUEST, "User not verified");
-    appAssert(!compareValues(user.password, userFound[0].password), BAD_REQUEST, "Invalid password!");
+    appAssert(compareValues(user.password, userFound[0].password), BAD_REQUEST, "Invalid password!");
     // create a new session, then issue a new jwt token.
     const {id: session_id} = (await setSession(userFound[0].id, userAgent))[0];
     const accesstoken = issueToken({
@@ -32,14 +32,20 @@ export const createUser = async (newUser: InsertUserType) =>{
     await db.insert(usersTable).values({...newUser, password: hashedPassword});
     const expires_at = getOneDayFromNow();
     const url = `http://localhost:5173/auth/verify?email=${email}&expiresAt=${expires_at.getTime()}`;
-    sendEmail(
-        {
-            to: email,
+//     sendEmail(
+//         {
+//             to: email,
+// subject:"join Splits today",
+// text:"click on the link to verify your account",
+// html: `<p>${url}</p>`
+//           }
+//     );
+    sendMail({
+        to: email,
 subject:"join Splits today",
 text:"click on the link to verify your account",
 html: `<p>${url}</p>`
-          }
-    );
+    })
     await db.insert(verificationTable).values({email, expiresAt: expires_at});
 }
 export const verifyUser = async (email:string, expiresAt: string) =>{
