@@ -8,7 +8,7 @@ import { newUserSchema } from "../lib/zod.schemas";
 import { setSession } from "./session.service";
 import { issueToken } from "../lib/jwt";
 import { getOneDayFromNow, tenMinsFromNow } from "../lib/date";
-import { sendEmail, sendMail } from "./email.service";
+import { sendMail } from "./email.service";
 
 export const loginUser = async (user: SelectUserType, userAgent?:string) => {
     const userFound = await db.select().from(usersTable).where(eq(usersTable.email, user.email));
@@ -72,8 +72,8 @@ export const requestResetLink = async (email: string) =>{
         });
 }
 export const newPasswordUpdate = async (email:string, expiresAt:string ,newPassword:string)=>{
-    const compareDate = Date.now() > new Date(expiresAt).getTime();
-    appAssert(!compareDate, BAD_REQUEST, "Sorry the link expired");
+    const compareDate = (expiresAt && Date.now() > new Date(expiresAt).getTime());
+    appAssert(!compareDate, BAD_REQUEST, "Sorry the link expired or is invalid");
     const newHashedPassword = hashValue(newPassword);
     await db.update(usersTable).set({password: newHashedPassword}).where(eq(usersTable.email, email));
 }
