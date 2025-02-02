@@ -7,7 +7,7 @@ import { BAD_REQUEST, CONFLICT, FORBIDDEN, NOT_FOUND } from "../lib/httpStatusCo
 import { newUserSchema } from "../lib/zod.schemas";
 import { setSession } from "./session.service";
 import { issueToken } from "../lib/jwt";
-import { getOneDayFromNow } from "../lib/date";
+import { getOneDayFromNow, tenMinsFromNow } from "../lib/date";
 import { sendEmail, sendMail } from "./email.service";
 
 export const loginUser = async (user: SelectUserType, userAgent?:string) => {
@@ -57,3 +57,23 @@ export const verifyUser = async (email:string, expiresAt: string) =>{
     await db.update(usersTable).set({is_verified: true}).where(eq(usersTable.email, email));
     await db.delete(verificationTable).where(eq(verificationTable.email, email));
 }   
+
+export const requestResetLink = async (email: string) =>{
+    const result = await db.select().from(usersTable).where(eq(usersTable.email, email));
+    appAssert(result, NOT_FOUND, "user cant be found");
+
+    const url = `http://localhost:5173/auth/password/new/submit/email=${email}/expiresAt=${tenMinsFromNow()}`
+
+    sendMail({
+        to: email,
+        subject:"Password Resent Link",
+        text:"Please click the link",
+        html: `<p>${url}</p>`
+        });
+}
+export const newPasswordUpdate = async (email:string, expiresAt:string ,newPassword:string)=>{
+    const compareDate = Date.now() > new Date(expiresAt).getTime();
+    appAssert(!compareDate, BAD_REQUEST, "Sorry the link expired");
+    const newHashedPassword = hashValue(newPassword);
+    await db.update(usersTable).set({password: newHashedPassword}).where(eq(usersTable.email, email));
+}
