@@ -14,3 +14,7 @@ export const loginSchema = z.object({
     password: passwordSchema,
     userAgent:z.string().optional()
 })
+export const newGroupSchema = z.object({
+    group_name: z.string().min(1).max(10),
+    user_id: z.number()
+});

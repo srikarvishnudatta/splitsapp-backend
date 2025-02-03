@@ -32,28 +32,25 @@ export const createUser = async (newUser: InsertUserType) =>{
     await db.insert(usersTable).values({...newUser, password: hashedPassword});
     const expires_at = getOneDayFromNow();
     const url = `http://localhost:5173/auth/verify?email=${email}&expiresAt=${expires_at.getTime()}`;
-//     sendEmail(
-//         {
-//             to: email,
-// subject:"join Splits today",
-// text:"click on the link to verify your account",
-// html: `<p>${url}</p>`
-//           }
-//     );
     sendMail({
         to: email,
 subject:"join Splits today",
 text:"click on the link to verify your account",
 html: `<p>${url}</p>`
     })
-    await db.insert(verificationTable).values({email, expiresAt: expires_at});
+    await db.insert(verificationTable).values({email, expiresAt: expires_at, type: "email_verification"});
 }
-export const verifyUser = async (email:string, expiresAt: string) =>{
+export const verifyUser = async (
+    email:string,
+    expiresAt: string
+) =>{
     const compareDate = Date.now() > new Date(expiresAt).getTime()
     appAssert(!compareDate, BAD_REQUEST, "Sorry the link expired");
     const result = await db.select().from(verificationTable).where(eq(verificationTable.email, email));
     appAssert(result, FORBIDDEN, "you havent created an account");
     // update user table to verified
+    // const user = await db.select().from(usersTable).where(eq(usersTable.email, email));
+    // appAssert(!user[0].is_verified, FORBIDDEN, "user already verified");
     await db.update(usersTable).set({is_verified: true}).where(eq(usersTable.email, email));
     await db.delete(verificationTable).where(eq(verificationTable.email, email));
 }   
@@ -61,9 +58,7 @@ export const verifyUser = async (email:string, expiresAt: string) =>{
 export const requestResetLink = async (email: string) =>{
     const result = await db.select().from(usersTable).where(eq(usersTable.email, email));
     appAssert(result, NOT_FOUND, "user cant be found");
-
-    const url = `http://localhost:5173/auth/password/new/submit/email=${email}/expiresAt=${tenMinsFromNow()}`
-
+    const url = `http://localhost:5173/auth/password/new/submit/email=${email}/expiresAt=${tenMinsFromNow().getTime()}`
     sendMail({
         to: email,
         subject:"Password Resent Link",

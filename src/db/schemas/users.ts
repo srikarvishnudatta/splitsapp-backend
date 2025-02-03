@@ -1,4 +1,9 @@
-import { boolean, integer, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, pgEnum, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+
+export const verification_type = pgEnum("verification_type", [
+  "email_verification",
+  "reset_password_verification"
+])
 
 export const usersTable = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -12,8 +17,10 @@ export const usersTable = pgTable("users", {
 export const verificationTable = pgTable("verification_table", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   email: varchar({ length: 255 }).notNull().unique(),
-  expiresAt: timestamp().notNull()
-})
+  expiresAt: timestamp().notNull(),
+  type: verification_type()
+});
+
 
 export type InsertVerificationTable = typeof verificationTable.$inferInsert;
 

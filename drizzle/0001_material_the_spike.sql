@@ -1,0 +1,1 @@
+CREATE TYPE "public"."verification_type" AS ENUM('email_verification', 'reset_password_verification');

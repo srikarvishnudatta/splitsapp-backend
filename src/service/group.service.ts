@@ -1,26 +1,26 @@
-import {z} from "zod";
-import { groupMembershipsTable, groupTable, InsertGroupTable } from "../db/schemas/groups";
+import {groupTable, InsertGroupTable} from "../db/schemas/groups";
 import db from "../db";
-import { eq } from "drizzle-orm";
-const newGroupSchema = z.object({
-    group_name: z.string().min(1).max(10),
-    user_id: z.number()
-});
+import {and, eq} from "drizzle-orm";
+import {newGroupSchema} from "../lib/zod.schemas";
 
-const createGroup = async (newGroup: InsertGroupTable) => {
+
+export const createGroup = async (newGroup: InsertGroupTable) => {
     newGroupSchema.parse(newGroup);
     await db.insert(groupTable).values({...newGroup});
     return true;
 }
-const getGroupOwner = async () =>{
-    const owners = await db.select().from(groupMembershipsTable).where(eq(groupMembershipsTable.is_owner, true));
-    // for all the group_ids in where, fetch from group table.
-    return owners;
+const getAllGroups = async (userId:number) =>{
+    return db.select().from(groupTable).where(eq(groupTable.member, userId));
 }
-const getGroupMembers = async () =>{
-    const members = await db.select().from(groupMembershipsTable).where(eq(groupMembershipsTable.is_owner, false));
+export const getGroupsByOwner = async (userId:number) =>{
+    const allGroups = await getAllGroups(userId);
     // for all the group_ids in where, fetch from group table.
-    return members;
+    return allGroups.filter((grp) => grp.is_owner === true);
+}
+export const getGroupMembers = async (userId: number) =>{
+    const allGroups = await getAllGroups(userId);
+    // for all the group_ids in where, fetch from group table.
+    return allGroups.filter((grp) => grp.is_owner === false);
 }
 const inviteToGroup = () => {
     // i need a group_id, user_id [whom i am inviting], their email, some generated token, status = "invited", expires in 24hr?

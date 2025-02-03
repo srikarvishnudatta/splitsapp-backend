@@ -7,11 +7,12 @@ export const statusEnum = pgEnum("status_type", [
     "rejected",
     "expired"
 ]);
-
+// technically speaking -> user_id as member, is_owner: true/false
 export const groupTable = pgTable("groups", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   group_name: varchar({length: 255}).notNull(),
-  owner: integer().notNull().references(() => usersTable.id)
+    member: integer().notNull().references(() => usersTable.id),
+    is_owner: boolean().notNull().default(true)
 });
 
 export const groupMembershipsTable = pgTable("group_memberships", {

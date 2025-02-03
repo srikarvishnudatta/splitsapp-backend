@@ -5,7 +5,8 @@ import AppErrorCode from "../lib/AppErrorCode";
 import { verifyToken } from "../lib/jwt";
 
 const authenticate: RequestHandler = (req, res, next) =>{
-    const accessToken = req.headers['Authorization'] as string | undefined;
+    const auth = req.headers['authorization'] as string | undefined;
+    const accessToken = auth?.split(" ")[1]
     appAssert(accessToken, UNAUTHORIZED, "Invalid Access Token", AppErrorCode.InvalidAccessToken);
 
     const {error, payload} = verifyToken(accessToken);
