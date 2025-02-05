@@ -1,5 +1,6 @@
 import { boolean, integer, pgEnum, pgTable,timestamp,varchar } from "drizzle-orm/pg-core";
 import { usersTable } from "./users";
+import { sql } from "drizzle-orm";
 
 export const statusEnum = pgEnum("status_type", [
     "invited",
@@ -7,12 +8,13 @@ export const statusEnum = pgEnum("status_type", [
     "rejected",
     "expired"
 ]);
-// technically speaking -> user_id as member, is_owner: true/false
+
 export const groupTable = pgTable("groups", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   group_name: varchar({length: 255}).notNull(),
-    member: integer().notNull().references(() => usersTable.id),
-    is_owner: boolean().notNull().default(true)
+    owner: integer().notNull().references(() => usersTable.id),
+    members: integer().array().notNull().default(sql`'{}'::integer[]`),
+    created_at: timestamp().defaultNow().notNull()
 });
 
 export const groupMembershipsTable = pgTable("group_memberships", {
@@ -25,9 +27,8 @@ export const groupMembershipsTable = pgTable("group_memberships", {
 export const groupInvitationsTable = pgTable("group_invitations", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     group_id: integer().notNull().references(() => groupTable.id),
-    invited_id: integer().notNull().references(() => usersTable.id),
-    invited_email: varchar({length: 255}).notNull(),
-    invited_token: varchar({length: 255}).notNull(),
+    sender_id: integer().notNull().references(() => usersTable.id),
+    receiver_id: integer().notNull().references(() => usersTable.id),
     status: statusEnum(),
     created_at: timestamp().defaultNow().notNull(),
     expires_at: timestamp().notNull()
