@@ -1,7 +1,5 @@
 import {groupInvitationsTable, groupMembershipsTable, groupTable} from "../db/schemas/groups";
 import db from "../db";
-import {newGroupSchema} from "../lib/zod.schemas";
-import {NewGroupData} from "../controller/group.controller";
 import {getOneDayFromNow} from "../lib/date";
 import {usersTable} from "../db/schemas/users";
 import {and, eq} from "drizzle-orm";
@@ -9,8 +7,8 @@ import appAssert from "../lib/appAssert";
 import {NOT_FOUND} from "../lib/httpStatusCode";
 
 
-export const createGroup = async (newGroup: NewGroupData) => {
-    newGroupSchema.parse(newGroup);
+export const createGroup = async (newGroup: any) => {
+    // newGroupSchema.parse(newGroup);
     await db.insert(groupTable).values({...newGroup});
 }
 export const sendInvite = async (invitee:string, groupId:number, senderId:number)=>{
@@ -29,16 +27,14 @@ export const sendInvite = async (invitee:string, groupId:number, senderId:number
 export const getGroupsByOwner = async (userId:number) =>{
     // for all the group_ids in where, fetch from group table.
     return db.select().from(groupTable).where(eq(groupTable.owner, userId))
-    // return allGroups.filter((grp) => grp.is_owner === true);
 }
 export const getGroupMembers = async (userId: number) =>{
-    // for all the group_ids in where, fetch from group table.
+    // filter out the necessary content for fetch
     return db
         .select()
         .from(groupTable)
         .innerJoin(groupMembershipsTable, eq(groupTable.id, groupMembershipsTable.group_id))
         .where(eq(groupMembershipsTable.is_owner, false));
-    // return allGroups.filter((grp) => grp.is_owner === false);
 }
 export const getInvitesFromTable = async (userId: number) =>{
     return db.select()

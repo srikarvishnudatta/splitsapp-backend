@@ -9,7 +9,6 @@ import {
 } from "../service/group.service";
 export interface NewGroupData{
     group_name:string;
-    owner: number;
 }
 
 export const getAllGroups = async (req: Request, res: Response) =>{
@@ -24,7 +23,7 @@ export const getAllGroups = async (req: Request, res: Response) =>{
 export const createNewGroup = async (req: Request<{}, {}, NewGroupData>, res: Response) =>{
     // @ts-ignore
     const owner = req.userId;
-    const {group_name} ={ ...req.body}
+    const {group_name} = req.body
     const groupData = {
         group_name,
         owner,
