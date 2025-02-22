@@ -1,30 +1,23 @@
 import { Request, Response } from "express";
 import {
     acceptInvite,
-    createGroup, declineInvite,
-    getGroupMembers,
-    getGroupsByOwner,
+    createGroup, declineInvite, getGroupMembers,
     getInvitesFromTable,
     sendInvite
 } from "../service/group.service";
-export interface NewGroupData{
-    group_name:string;
-}
+import {NewGroupBody, NewGroupData} from "../lib/types/types";
 
 export const getAllGroups = async (req: Request, res: Response) =>{
     // @ts-ignore
     const userId = req.userId;
-    // call the table to find the owners
-    const owners = await getGroupsByOwner(userId);
-    // call the member to find the members
-    const members = await getGroupMembers(userId);
-    return res.status(200).send({owners, members});
+    const groups = await getGroupMembers(userId);
+    return res.status(200).send(groups);
 }
-export const createNewGroup = async (req: Request<{}, {}, NewGroupData>, res: Response) =>{
+export const createNewGroup = async (req: Request<{}, {}, NewGroupBody>, res: Response) =>{
     // @ts-ignore
     const owner = req.userId;
     const {group_name} = req.body
-    const groupData = {
+    const groupData: NewGroupData = {
         group_name,
         owner,
     }
