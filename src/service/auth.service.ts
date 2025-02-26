@@ -48,16 +48,13 @@ export const verifyUser = async (
     appAssert(!compareDate, BAD_REQUEST, "Sorry the link expired");
     const result = await db.select().from(verificationTable).where(eq(verificationTable.email, email));
     appAssert(result, FORBIDDEN, "you havent created an account");
-    // update user table to verified
-    // const user = await db.select().from(usersTable).where(eq(usersTable.email, email));
-    // appAssert(!user[0].is_verified, FORBIDDEN, "user already verified");
     await db.update(usersTable).set({is_verified: true}).where(eq(usersTable.email, email));
     await db.delete(verificationTable).where(eq(verificationTable.email, email));
 }   
 
 export const requestResetLink = async (email: string) =>{
     const result = await db.select().from(usersTable).where(eq(usersTable.email, email));
-    appAssert(result, NOT_FOUND, "user cant be found");
+    appAssert(result, NOT_FOUND, "user not found");
     const url = `http://localhost:5173/auth/password/new/submit/email=${email}/expiresAt=${tenMinsFromNow().getTime()}`
     sendMail({
         to: email,

@@ -23,6 +23,11 @@ export const resetHandler = async (req: Request, res: Response) =>{
     const email = req.query.email as string;
     requestResetLink(email) 
     return res.status(200).send({msg : "email reset link will be sent shortly!"});
+}
+export const resendVerifyHandler = async (req: Request, res: Response) =>{
+    const email = req.query.email as string;
+    requestResetLink(email);
+    return res.status(200).send({msg: "verification link sent once again!"});
 }   
 export const newPasswordHandler = async (req: Request<{}, {}, {newPassword:string}>, res: Response) =>{
     const email = req.query.email as string;
