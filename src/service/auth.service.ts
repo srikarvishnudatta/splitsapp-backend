@@ -23,6 +23,12 @@ export const loginUser = async (user: SelectUserType, userAgent?:string) => {
     });
     return accesstoken;
 }
+export const getUserById = async (userId: number) =>{
+    const userFound = await db.select({first_name: usersTable.first_name,
+        last_name:usersTable.last_name, email: usersTable.email}).from(usersTable).where(eq(usersTable.id, userId));
+    appAssert(userFound, NOT_FOUND, "User does not exist!");
+    return userFound[0];
+}
 export const createUser = async (newUser: InsertUserType) =>{
     const userFound = await db.select().from(usersTable).where(eq(usersTable.email, newUser.email));
     appAssert(userFound, CONFLICT, "email already exists!");

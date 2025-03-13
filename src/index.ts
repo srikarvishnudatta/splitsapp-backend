@@ -6,9 +6,10 @@ import groupRouter from "./routes/group.router";
 // import cookieParser from "cookie-parser";
 import cors from "cors";
 import authenticate from "./middleware/authenticate";
+import homeRouter from "./routes/home.router";
 
 config();
-const app = express();
+export const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cors());
@@ -21,7 +22,8 @@ const PORT = process.env.PORT || 4000
 app.use("/auth", authRouter);
 
 // add the token verification and extraction user_id, session_id?.
-app.use("/group", authenticate,groupRouter);
+app.use("/", authenticate, homeRouter);
+app.use("/groups", authenticate, groupRouter);
 
 app.use(errorHandler);
 
