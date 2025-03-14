@@ -1,16 +1,19 @@
 import { Router } from "express";
 import { errorWrapper } from "../lib/errorWrapper";
 import {createNewGroup, getAllGroups} from "../controller/group.controller";
-import { invite, accept, decline } from "../controller/invite.controller";
+import { invite, accept, decline, allInvites } from "../controller/invite.controller";
 
 const groupRouter = Router();
 
+// group paths
 groupRouter.get("/", errorWrapper(getAllGroups));
 groupRouter.post("/new", errorWrapper(createNewGroup));
-//body has sender email, extract sender_user_id from token and use it here
-groupRouter.post("/invite/", errorWrapper(invite));
-// whoever is the receiver here make them isowner: false in relations, sent invitation to accepted
-groupRouter.get("/invite/:groupId/verify/accept", errorWrapper(accept));
-groupRouter.get("/invite/:groupId/verify/decline", errorWrapper(decline));
+
+
+// invite paths
+groupRouter.post("/sendInvite/", errorWrapper(invite));
+groupRouter.get("/invites", errorWrapper(allInvites))
+groupRouter.get("/:groupId/invite/accept", errorWrapper(accept));
+groupRouter.get("/:groupId/invite/decline", errorWrapper(decline));
 
 export default groupRouter;
