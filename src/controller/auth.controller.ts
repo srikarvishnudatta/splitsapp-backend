@@ -36,3 +36,6 @@ export const newPasswordHandler = async (req: Request<{}, {}, {newPassword:strin
     await newPasswordUpdate(email, expiresAt, req.body.newPassword);
     return res.status(200).send({msg: "password updated successfully!"});
 }
+export const logoutUser = async (req: Request, res: Response) =>{
+    
+}

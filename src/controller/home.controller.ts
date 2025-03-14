@@ -3,7 +3,7 @@ import {getUserById} from "../service/auth.service";
 import {getInvitesFromTable} from "../service/group.service";
 
 export const getHomeData = async (req: Request, res: Response) => {
-
+    
 }
 export const getProfileData = async (req:Request, res: Response) =>{
     // @ts-ignore

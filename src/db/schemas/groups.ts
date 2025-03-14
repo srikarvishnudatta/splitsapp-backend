@@ -26,13 +26,15 @@ export const groupMembershipsTable = pgTable("group_memberships", {
 
 export const groupInvitationsTable = pgTable("group_invitations", {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    group_id: integer().notNull().references(() => groupTable.id),
     sender_id: integer().notNull().references(() => usersTable.id),
+    sender_name:varchar({length:255}).notNull(),
     receiver_id: integer().notNull().references(() => usersTable.id),
+    group_id: integer().notNull().references(() => groupTable.id),
+    group_name: varchar({length:255}).notNull(),
     status: statusEnum(),
     created_at: timestamp().defaultNow().notNull(),
     expires_at: timestamp().notNull()
-})
+});
 
 export type InsertGroupTable = typeof groupTable.$inferInsert;
 
