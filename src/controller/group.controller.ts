@@ -1,16 +1,16 @@
 import { Request, Response } from "express";
 import {
-    createGroup, getGroupMembers,
+    createGroup, getGroupByIdService, getGroupMembers,
 } from "../service/group.service";
 import {NewGroupBody, NewGroupData} from "../lib/types/types";
 
-export const getAllGroups = async (req: Request, res: Response) =>{
+const getAllGroups = async (req: Request, res: Response) =>{
     // @ts-ignore
     const userId = req.userId;
     const groups = await getGroupMembers(userId);
     return res.status(200).send(groups);
 }
-export const createNewGroup = async (req: Request<{}, {}, NewGroupBody>, res: Response) =>{
+const createNewGroup = async (req: Request<{}, {}, NewGroupBody>, res: Response) =>{
     // @ts-ignore
     const owner = req.userId;
     const {group_name} = req.body
@@ -21,4 +21,11 @@ export const createNewGroup = async (req: Request<{}, {}, NewGroupBody>, res: Re
     await createGroup(groupData)
     return res.status(201).send({msg: "group created"});
 }
+const getGroupById = async (req: Request, res: Response) => {
+    // @ts-ignore
+    const groupId = parseInt(req.params.groupId);
+    const result = await getGroupByIdService(groupId);
+    return res.status(200).send({group: {...result[0]}})
+}
+export {getGroupById, getAllGroups, createNewGroup}
 

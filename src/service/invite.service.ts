@@ -39,7 +39,7 @@ const getInvitesCount = async (userId : number)=>{
 const getInvitesFromTable = async (userId: number) =>{
     return db.select({groupId: groupInvitationsTable.group_id,
         groupName:groupInvitationsTable.group_name,
-        senderName: groupInvitationsTable.group_name
+        senderName: groupInvitationsTable.sender_name
     })
         .from(groupInvitationsTable)
         .where(and(eq(groupInvitationsTable.receiver_id, userId), eq(groupInvitationsTable.status, "invited")));

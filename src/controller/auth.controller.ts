@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { createUser, loginUser, newPasswordUpdate, requestResetLink, verifyUser } from "../service/auth.service"
+import { createUser, loginUser, newPasswordUpdate, requestResetLink, verifyUser, resendVerifyLink } from "../service/auth.service"
 import { InsertUserType, SelectUserType } from "../db/schemas/users";
 import { loginSchema } from "../lib/zod.schemas";
 
@@ -27,7 +27,7 @@ export const resetHandler = async (req: Request, res: Response) =>{
 }
 export const resendVerifyHandler = async (req: Request, res: Response) =>{
     const email = req.query.email as string;
-    await requestResetLink(email);
+    await resendVerifyLink(email);
     return res.status(200).send({msg: "verification link sent once again!"});
 }   
 export const newPasswordHandler = async (req: Request<{}, {}, {newPassword:string}>, res: Response) =>{
