@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 
 export type AccessTokenPayload = {
     userId: number;
-    sessionId:number;
 }
 type SignOptionsAndSecret = SignOptions & {
     secret:string;

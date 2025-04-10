@@ -1,4 +1,4 @@
-import { transporter } from "../lib/email";
+import { transporter } from "../lib/util/email";
 
 type EmailParams = {
     to:string,

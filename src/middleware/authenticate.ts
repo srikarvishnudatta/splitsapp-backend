@@ -1,8 +1,8 @@
 import { RequestHandler } from "express";
-import appAssert from "../lib/appAssert";
-import { UNAUTHORIZED } from "../lib/httpStatusCode";
-import AppErrorCode from "../lib/AppErrorCode";
-import { verifyToken } from "../lib/jwt";
+import appAssert from "../lib/util/appAssert";
+import { UNAUTHORIZED } from "../lib/util/httpStatusCode";
+import AppErrorCode from "../lib/util/AppErrorCode";
+import {verifyToken} from "../lib/util/jwt";
 
 const authenticate: RequestHandler = (req, res, next) =>{
     const auth = req.headers['authorization'] as string | undefined;
@@ -13,10 +13,9 @@ const authenticate: RequestHandler = (req, res, next) =>{
 
     appAssert(payload, UNAUTHORIZED, error === "jwt expired" ? "Token expired" : "Invalid token",
         AppErrorCode.InvalidAccessToken);
-    // @ts-ignore
+
+    //@ts-ignore
     req.userId = payload.userId;
-    // @ts-ignore
-    req.sessionId = payload.sessionId;
     next();
 }
 export default authenticate;

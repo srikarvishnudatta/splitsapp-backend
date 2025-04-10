@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express"
-import AppError from "../lib/AppError";
-import { INTERNAL_SERVER_ERROR } from "../lib/httpStatusCode";
+import AppError from "../lib/util/AppError";
+import { INTERNAL_SERVER_ERROR } from "../lib/util/httpStatusCode";
 
 export const errorHandler: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) =>{
     console.log(`Error on path ${req.path}`);

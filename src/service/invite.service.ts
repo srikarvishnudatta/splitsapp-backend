@@ -2,9 +2,9 @@ import { eq, and, count } from "drizzle-orm";
 import db from "../db";
 import { groupInvitationsTable, groupTable, groupMembershipsTable } from "../db/schemas/groups";
 import { usersTable } from "../db/schemas/users";
-import appAssert from "../lib/appAssert";
-import { getOneDayFromNow } from "../lib/date";
-import { NOT_FOUND } from "../lib/httpStatusCode";
+import appAssert from "../lib/util/appAssert";
+import { getOneDayFromNow } from "../lib/util/date";
+import { NOT_FOUND } from "../lib/util/httpStatusCode";
 
 const sendInvite = async (receiver:string, groupId:number, senderId:number)=>{
     const receiver_id = 

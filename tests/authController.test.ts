@@ -1,6 +1,6 @@
-import * as authService from "../src/service/auth.service";
+import * as authService from "../src/legacy/auth.service";
 import {app} from "../src/index"
-jest.mock('../src/service/auth.service')
+jest.mock('../src/legacy/auth.service')
 import request from "supertest"
 
 describe('login', () =>{

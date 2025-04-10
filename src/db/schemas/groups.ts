@@ -35,10 +35,3 @@ export const groupInvitationsTable = pgTable("group_invitations", {
     created_at: timestamp().defaultNow().notNull(),
     expires_at: timestamp().notNull()
 });
-
-export type InsertGroupTable = typeof groupTable.$inferInsert;
-
-
-export type InsertInvitationType = typeof groupInvitationsTable.$inferInsert;
-
-export type InsertMembershipType = typeof groupMembershipsTable.$inferInsert;
