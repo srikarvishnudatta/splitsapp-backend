@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import {
     createGroup, deleteGroupService, getGroupByIdService, getGroupMembers,
 } from "../service/group.service";
-import {NewGroupBody, NewGroupData} from "../lib/types/types";
+import {InviteData, NewGroupBody, NewGroupData} from "../lib/types/types";
+import {acceptInvite, getInvitesFromTable, sendInvite} from "../service/invite.service";
 
 const getAllGroups = async (req: Request, res: Response) =>{
     // @ts-ignore
@@ -18,8 +19,8 @@ const createNewGroup = async (req: Request<{}, {}, NewGroupBody>, res: Response)
         group_name,
         owner,
     }
-    await createGroup(groupData)
-    return res.status(201).send({msg: "group created"});
+    const result = await createGroup(groupData)
+    return res.status(201).send({msg: "group created", ...result});
 }
 const getGroupById = async (req: Request, res: Response) => {
     // @ts-ignore
@@ -32,5 +33,25 @@ const deleteGroup = async (req: Request, res:Response) =>{
     await deleteGroupService(groupId);
     return res.status(200).send("ok deleted");
 }
-export {getGroupById, getAllGroups, createNewGroup, deleteGroup}
+const inviteHandler = async (req:Request<{}, {}, InviteData>, res: Response)=>{
+    // @ts-ignore
+    const userId = req.userId;
+    const {receiver, groupId} = req.body;
+    await sendInvite(receiver, groupId, userId);
+    return res.status(201).send({message: "Invite Sent!"});
+}
+const allInvitesHandler = async (req:Request, res:Response)=>{
+    // @ts-ignore
+    const userId = req.userId;
+    const allInvites = await getInvitesFromTable(userId);
+    return res.status(200).send({invites: allInvites})
+}
+const acceptInviteHandler = async (req: Request, res:Response)=>{
+    // @ts-ignore
+    const userId = req.userId;
+    const groupId = parseInt(req.params.groupId);
+    await acceptInvite(userId, groupId);
+    return res.status(200).send({message: "Invite Accepted"});
+}
+export {getGroupById, getAllGroups, createNewGroup, deleteGroup, inviteHandler, allInvitesHandler, acceptInviteHandler}
 

@@ -9,6 +9,7 @@ const createGroup = async (newGroup: NewGroupData) => {
     members.push(newGroup.owner);
     const result  = await db.insert(groupTable).values({...newGroup, members}).returning({id: groupTable.id});
     await db.insert(groupMembershipsTable).values({group_id: result[0].id, user_id:newGroup.owner, is_owner:true});
+    return result[0]
 }
 const getGroupMembers = async (userId: number) =>{
     // filter out the necessary content for fetch

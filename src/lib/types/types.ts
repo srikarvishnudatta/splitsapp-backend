@@ -15,3 +15,7 @@ export interface SignupData{
     first_name:string;
     last_name:string;
 }
+export interface InviteData{
+    groupId:number;
+    receiver:string;
+}
